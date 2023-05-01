@@ -1,0 +1,78 @@
+-- Instances:
+
+local ScreenGui = Instance.new("ScreenGui")
+local Frame = Instance.new("Frame")
+local ImageButton = Instance.new("ImageButton")
+
+--Properties:
+
+ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+Frame.Parent = ScreenGui
+Frame.BackgroundColor3 = Color3.fromRGB(113, 113, 113)
+Frame.Position = UDim2.new(0.743243217, 0, 0.219109461, 0)
+Frame.Size = UDim2.new(0.0617420077, 0, 0.0963855386, 0)
+
+ImageButton.Parent = Frame
+ImageButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+ImageButton.Size = UDim2.new(1, 0, 1, 0)
+ImageButton.Image = "rbxassetid://13302065390"
+ImageButton.MouseButton1Down:Connect(function()
+ game:GetService("VirtualInputManager"):SendKeyEvent(true, "F" , false , game)
+end)
+
+
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
+local Window = Library.CreateLib("COCO HUB", "DarkTheme")
+
+local Tab1 = Window:NewTab("Main")
+local Section = Tab1:NewSection("Local Player")
+Section:NewTextBox("WalkSpeed", "Modify player walk speed", function(s) -- 200 (MaxValue) | 16 (MinValue)
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = s
+end)
+
+
+Section:NewTextBox("JumpPower", "Modify player jump force", function(s) -- 150 (MaxValue) | 16 (MinValue)
+        game.Players.LocalPlayer.Character.Humanoid.JumpPower = s
+end)
+
+-- NoClip
+
+local player = game:GetService("Players").LocalPlayer
+local runservice = game:GetService("RunService")
+
+local isnoclipping = false
+
+runservice.Stepped:Connect(function()
+                    if player.Character then
+                        if isnoclipping == true then
+                            for i,v in pairs(player.Character:GetDescendants()) do
+                                if v:IsA("BasePart") then
+                                    v.CanCollide = false
+                                    end
+                                end
+                            end
+                        end
+        end)
+
+Section:NewToggle("NoClip", "Make player face through walls & others", function(state)
+    if state then
+        isnoclipping=true
+    else
+     if isnoclipping==true then
+           isnoclipping=false
+            end       
+    
+     end
+                    
+end)
+
+
+
+local Tab2 = Window:NewTab("Dev")
+local Section = Tab2:NewSection("Toggle")
+
+Section:NewKeybind("UI", "UI", Enum.KeyCode.F, function()
+	Library:ToggleUI()
+end)
