@@ -1,29 +1,70 @@
--- Button:
-
 -- Instances:
 
 local ScreenGui = Instance.new("ScreenGui")
-local Frame = Instance.new("Frame")
 local ImageButton = Instance.new("ImageButton")
 
 --Properties:
 
 ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-ScreenGui.ResetOnSpawn = false
 
-Frame.Parent = ScreenGui
-Frame.BackgroundColor3 = Color3.fromRGB(113, 113, 113)
-Frame.Position = UDim2.new(0.743243217, 0, 0.219109461, 0)
-Frame.Size = UDim2.new(0.0617420077, 0, 0.0963855386, 0)
-
-ImageButton.Parent = Frame
+ImageButton.Parent = ScreenGui
 ImageButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-ImageButton.Size = UDim2.new(1, 0, 1, 0)
+ImageButton.Position = UDim2.new(0.197739869, 0, 0.10394381, 0)
+ImageButton.Size = UDim2.new(0, 56, 0, 49)
 ImageButton.Image = "rbxassetid://13302065390"
 ImageButton.MouseButton1Down:Connect(function()
- game:GetService("VirtualInputManager"):SendKeyEvent(true, "F" , false , game)
+ game:GetService("VirtualInputManager"):SendKeyEvent(true, "F6" , false , game)
 end)
+
+-- Scripts:
+
+local function UCQM_fake_script() -- ImageButton.LocalScript 
+ local script = Instance.new('LocalScript', ImageButton)
+
+ local UIS = game:GetService("UserInputService")
+ 
+ local draggableFrame = script.Parent
+ 
+ local IsDragging = false  --checks if the player is dragging the frame
+ local dragInput    --input variable which we will use later
+ local StartingPoint
+ local oldPos    --Old position from the frame
+ 
+ local function update(input)
+  local delta = input.Position - StartingPoint
+  draggableFrame.Position = UDim2.new(oldPos.X.Scale, oldPos.X.Offset + delta.X, oldPos.Y.Scale, oldPos.Y.Offset + delta.Y)
+ end
+ 
+ draggableFrame.InputBegan:Connect(function(input)
+  if input.UserInputType == Enum.UserInputType.Touch then
+   IsDragging = true
+   StartingPoint = input.Position
+   oldPos = draggableFrame.Position
+ 
+   input.Changed:Connect(function()
+    if input.UserInputState == Enum.UserInputState.End then
+     IsDragging = false
+    end
+   end)
+  end
+ end)
+ 
+ draggableFrame.InputChanged:Connect(function(input)
+  if input.UserInputType == Enum.UserInputType.Touch then
+   dragInput = input
+  end
+ end)
+ 
+ UIS.InputChanged:Connect(function(input)
+  if input == dragInput and IsDragging then
+   update(input)
+  end
+ end)
+ 
+ 
+end
+coroutine.wrap(UCQM_fake_script)()
 
 
 -- The UI:
@@ -121,6 +162,6 @@ end)
 local Tab2 = Window:NewTab("Dev")
 local Section = Tab2:NewSection("Toggle")
 
-Section:NewKeybind("UI", "UI", Enum.KeyCode.F, function()
+Section:NewKeybind("UI", "UI", Enum.KeyCode.F6, function()
 	Library:ToggleUI()
 end)
